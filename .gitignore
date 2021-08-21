@@ -1,5 +1,11 @@
-# 忽略所有文件
+# Ignore all
 *
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
 
 # vscode
 .vscode/*
@@ -12,6 +18,5 @@
 # Local History for Visual Studio Code
 .history/
 
-# 不忽略
-!*.cpp
-!*.h
+#
+*.dSYM
