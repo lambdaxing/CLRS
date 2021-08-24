@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "insertion_sort.h"
+#include "merge_sort.h"
 
 using namespace std;
 
@@ -19,8 +19,8 @@ int main() {
   }
   cout << endl;
 
-  insertion_sort<int>(dn.get(), num);
-  insertion_sort<int>(n);
+  merge_sort<int>(dn.get(), num);
+  merge_sort<int>(n, num);
 
   for (unsigned i = 0; i < num; i++) {
     cout << dn.get()[i] << " ";
