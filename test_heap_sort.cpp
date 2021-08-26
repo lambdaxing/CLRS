@@ -1,7 +1,6 @@
 #include <iostream>
-#include <memory>
 
-#include "merge_sort.h"
+#include "heap_sort.h"
 
 using namespace std;
 
@@ -19,8 +18,8 @@ int main() {
   }
   cout << endl;
 
-  merge_sort(dn.get(), num);
-  merge_sort(n, num);
+  heap_sort(dn.get(), num);
+  heap_sort(n);
 
   for (unsigned i = 0; i < num; i++) {
     cout << dn.get()[i] << " ";

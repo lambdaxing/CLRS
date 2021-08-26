@@ -19,8 +19,8 @@ int main() {
   }
   cout << endl;
 
-  insertion_sort<int>(dn.get(), num);
-  insertion_sort<int>(n);
+  insertion_sort(dn.get(), num);
+  insertion_sort(n);
 
   for (unsigned i = 0; i < num; i++) {
     cout << dn.get()[i] << " ";
