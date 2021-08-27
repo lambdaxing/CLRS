@@ -21,10 +21,10 @@ class maxHeap {
   size_t left(size_t i) { return 2 * i; }
   size_t right(size_t i) { return 2 * i + 1; }
 
-  void max_heapify(size_t i);
-  void build_max_heap();
+  void max_heapify(size_t i);  // O(lgn)
+  void build_max_heap();       // O(n)
+  void heap_delete(size_t i);  // O(lgn)
   bool empty() const { return heap_size == 0; }
-  void alloc() { A = new T[length]; }
   void enlarge();
 
   size_t length;
@@ -108,6 +108,13 @@ void maxHeap<T>::build_max_heap() {
   for (auto i = length / 2; i >= 1; i--) {
     max_heapify(i);
   }
+}
+
+template <typename T>
+void maxHeap<T>::heap_delete(size_t i) {
+  if (i > heap_size || i == 0) throw illegalParameterValue("Heap underflow.");
+  A[i] = A[heap_size--];
+  max_heapify(i);
 }
 
 template <typename T>

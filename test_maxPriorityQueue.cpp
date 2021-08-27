@@ -1,19 +1,24 @@
 #include "maxPriorityQueue.h"
 
 int main() {
-  maxPriorityQueue<int> a;
-  maxPriorityQueue<int> b{7, 32, 6, 2, 89, 1, 3, 6, 90, 3, 0};
-  maxPriorityQueue<int> c(a);
-  maxPriorityQueue<int> d = c;
-  a = b = c = d;
-
+  maxPriorityQueue<int> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+  for (unsigned i = 1; i < 13; i++) {
+    std::cout << a.heap_maximum() << " " << a.heap_extract_max() << " ";
+  }
   std::cout << std::endl;
+  for (unsigned i = 1; i < 13; i++) {
+    a.max_heap_insert(i);
+    a.heap_increase_key(1, i + 1);
+  }
   std::cout << std::endl;
-
-  maxPriorityQueue<int> e(std::move(a));
-  maxPriorityQueue<int> fb{7, 32, 6, 2, 89, 1, 3, 6, 90, 3, 0};
-  maxPriorityQueue<int> f = std::move(fb);
-  maxPriorityQueue<int> g{};
-  g = std::move(f);
-  e = b = c = d = g;
+  maxPriorityQueue<int> b(a);
+  maxPriorityQueue<int> c(std::move(a));
+  for (unsigned i = 1; i < 13; i++) {
+    std::cout << b.heap_extract_max() << " ";
+  }
+  std::cout << std::endl;
+  for (unsigned i = 1; i < 13; i++) {
+    std::cout << c.heap_extract_max() << " ";
+  }
+  std::cout << std::endl;
 }

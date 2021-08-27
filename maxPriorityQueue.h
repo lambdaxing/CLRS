@@ -9,7 +9,6 @@ class maxPriorityQueue : private maxHeap<T> {
   using maxHeap<T>::max_heapify;
   using maxHeap<T>::build_max_heap;
   using maxHeap<T>::empty;
-  using maxHeap<T>::alloc;
   using maxHeap<T>::enlarge;
   using maxHeap<T>::parent;
   using maxHeap<T>::left;
@@ -34,6 +33,7 @@ class maxPriorityQueue : private maxHeap<T> {
 
 template <typename T>
 void maxPriorityQueue<T>::max_heap_insert(const T& key) {
+  enlarge();
   heap_size++;
   A[heap_size] = key;
   heap_increase_key(heap_size, key);
@@ -41,7 +41,8 @@ void maxPriorityQueue<T>::max_heap_insert(const T& key) {
 
 template <typename T>
 void maxPriorityQueue<T>::heap_increase_key(size_t i, const T& key) {
-  if (key < A[i]) throw illegalParameterValue("key must be >= A[i]");
+  if (key < A[i])
+    throw illegalParameterValue("New key is smaller than current key");
   A[i] = key;
   while (i > 1 && A[parent(i)] < A[i]) {
     using std::swap;
@@ -52,6 +53,7 @@ void maxPriorityQueue<T>::heap_increase_key(size_t i, const T& key) {
 
 template <typename T>
 T maxPriorityQueue<T>::heap_extract_max() {
+  if (empty()) throw illegalIndex("Heap underflow");
   T max = A[1];
   A[1] = A[heap_size];
   heap_size--;
@@ -61,7 +63,6 @@ T maxPriorityQueue<T>::heap_extract_max() {
 
 template <typename T>
 T maxPriorityQueue<T>::heap_maximum() {
-  if (empty())
-    throw illegalIndex("Execute heap_maximum() on empty maximum heap.");
+  if (empty()) throw illegalIndex("Heap underflow");
   return A[1];
 }

@@ -10,7 +10,7 @@ inline std::size_t right(std::size_t i) { return 2 * i + 2; }
 
 // A[i] 违背了最大堆的性质，假定 left 和 right 都是最大堆，
 // 让 A[i] 逐级下降，使以下标 i 为根结点的子树重新遵循最大堆的性质。
-// T(n) = O(lgn)：对于一个树高为 h 的节点，T(h) = O(h);
+// T(n) = O(lgn)：对于一个树高为 h 的节点，T(i) = O(h);
 template <typename T>
 void max_heapify(T* const A, std::size_t i, std::size_t heap_size) {
   auto l = left(i);
@@ -34,6 +34,31 @@ template <typename T>
 void build_max_heap(T* const A, std::size_t length) {
   for (auto i = length / 2 - 1; i >= 0; i--) {
     max_heapify(A, i, length);
+    if (i == 0) break;
+  }
+}
+
+template <typename T>
+void min_heapify(T* const A, std::size_t i, std::size_t heap_size) {
+  auto l = left(i);
+  auto r = right(i);
+  size_t smallest;
+  if (l < heap_size && A[l] < A[i])
+    smallest = l;
+  else
+    smallest = i;
+  if (r < heap_size && A[r] < A[smallest]) smallest = r;
+  if (smallest != i) {
+    using std::swap;
+    swap(A[i], A[smallest]);
+    min_heapify(A, smallest, heap_size);
+  }
+}
+
+template <typename T>
+void build_min_heap(T* const A, std::size_t length) {
+  for (auto i = length / 2 - 1; i >= 0; i--) {
+    min_heapify(A, i, length);
     if (i == 0) break;
   }
 }
