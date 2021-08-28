@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
   constexpr int num = 6;
-  int n[num]{5, 4, 3, 2, 1, 6};
+  int n[num]{6, 6, 6, 6, 6, 6};
   shared_ptr<int> dn(new int[num]{5, 4, 3, 2, 1, 6}, default_delete<int[]>());
 
   for (unsigned i = 0; i < num; i++) {

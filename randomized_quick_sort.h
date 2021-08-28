@@ -20,11 +20,28 @@ unsigned randomized_partition(T* const A, unsigned p, unsigned r) {
 }
 
 template <typename T>
+unsigned randomized_partition_plus(T* const A, unsigned p, unsigned r,
+                                   unsigned& t) {
+  auto i = random(p, r);
+  using std::swap;
+  swap(A[r], A[i]);
+  return partition_plus(A, p, r, t);
+}
+
+template <typename T>
 void randomized_quick_sort(T* const A, unsigned p, unsigned r) {
+  //   if (p < r) {
+  //     auto q = randomized_partition(A, p, r);
+  //     randomized_quick_sort(A, p, (q == 0 ? q : q - 1));
+  //     randomized_quick_sort(A, q + 1, r);
+  //   }
+
+  // randomized_partition_plus
   if (p < r) {
-    auto q = randomized_partition(A, p, r);
-    randomized_quick_sort(A, p, (q == 0 ? q : q - 1));
-    randomized_quick_sort(A, q + 1, r);
+    unsigned t;
+    auto q = randomized_partition_plus(A, p, r, t);
+    quick_sort(A, p, (q == 0 ? q : q - 1));
+    quick_sort(A, t + 1, r);
   }
 }
 

@@ -19,6 +19,48 @@ unsigned partition(T* const A, unsigned p, unsigned r) {
   return i + 1;
 }
 
+// p <= q <= t <= r
+// A[p..q-1] < A[q] == A[q..t] < A[t+1..r]
+template <typename T>
+unsigned partition_plus(T* const A, unsigned p, unsigned r, unsigned& t) {
+  auto x = A[r];
+  auto i = p - 1;  // 若 p = 0 ，这儿虽然溢出了，但后面均是使用 i + 1 。
+  t = 0;
+  using std::swap;
+  for (auto j = p; j < r; j++) {
+    if (A[j] <= x) {
+      if (A[j] == x) t++;
+      i++;
+      swap(A[i], A[j]);
+    }
+  }
+  swap(A[i + 1], A[r]);
+  auto q = i + 1 - t;
+  t = i + 1;
+  return q;
+}
+
+template <typename T>
+unsigned hoare_partition(T* const A, unsigned p, unsigned r) {
+  auto x = A[p];
+  auto i = p - 1;
+  auto j = r + 1;
+
+  while (true) {
+    do {
+      j = j - 1;
+    } while (A[j] > x);
+    do {
+      i = i + 1;
+    } while (A[i] < x);
+    if (i < j) {
+      using std::swap;
+      swap(A[i], A[j]);
+    } else
+      return j;
+  }
+}
+
 template <typename T>
 void quick_sort(T* const A, unsigned p, unsigned r) {
   if (p < r) {
@@ -26,6 +68,21 @@ void quick_sort(T* const A, unsigned p, unsigned r) {
     quick_sort(A, p, (q == 0 ? q : q - 1));
     quick_sort(A, q + 1, r);
   }
+
+  // // Hoare_partition 版本
+  // if (p < r) {
+  //   auto q = hoare_partition(A, p, r);
+  //   quick_sort(A, p, q);
+  //   quick_sort(A, q + 1, r);
+  // }
+
+  // // partition_plus
+  // if (p < r) {
+  //   unsigned t;
+  //   auto q = partition_plus(A, p, r, t);
+  //   quick_sort(A, p, (q == 0 ? q : q - 1));
+  //   quick_sort(A, t + 1, r);
+  // }
 }
 
 template <typename T>

@@ -2,9 +2,14 @@
 
 using namespace std;
 
+unsigned radix(const unsigned& n, unsigned j) {
+  int i = 1;
+  std::cout << i - 1;
+  return (10 ^ i);
+}
+
 int main() {
-  unsigned i = 0;
-  auto j = i - 1;
-  auto k = j + 1;
-  cout << i << endl << j << endl << ++j << endl << k << endl;
+  for (int i = 1; i < 100; i++) {
+    std::cout << i << " " << radix(i, 1) << std::endl;
+  }
 }

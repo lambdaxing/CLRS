@@ -1,32 +1,31 @@
 #include <iostream>
-#include <memory>
 
-#include "quick_sort.h"
+#include "counting_sort.h"
 
 using namespace std;
 
 int main() {
   constexpr int num = 6;
-  int n[num]{6, 6, 6, 6, 6, 6};
-  shared_ptr<int> dn(new int[num]{5, 4, 3, 2, 1, 6}, default_delete<int[]>());
+  int n[1]{6};
+  shared_ptr<int> dn(new int[num]{5, 3, 3, 1, 1, 6}, default_delete<int[]>());
 
   for (unsigned i = 0; i < num; i++) {
     cout << dn.get()[i] << " ";
   }
   cout << endl;
-  for (unsigned i = 0; i < num; i++) {
+  for (unsigned i = 0; i < 1; i++) {
     cout << n[i] << " ";
   }
   cout << endl;
 
-  quick_sort(dn.get(), num);
-  quick_sort(n, num);
+  counting_sort(dn.get(), num, 6);
+  counting_sort(n, 6);
 
   for (unsigned i = 0; i < num; i++) {
     cout << dn.get()[i] << " ";
   }
   cout << endl;
-  for (unsigned i = 0; i < num; i++) {
+  for (unsigned i = 0; i < 1; i++) {
     cout << n[i] << " ";
   }
   cout << endl;
