@@ -15,5 +15,8 @@
         "unordered_map": "cpp",
         "utility": "cpp",
         "algorithm": "cpp"
+    },
+    "files.exclude": {
+        "**/.dSYM": true
     }
 }
