@@ -19,5 +19,6 @@ int main() {
   }
   cout << endl;
 
-  cout << randomized_select(dn.get(), num, 3) << endl;
-  cout << randomized_select(n, 3) << endl;
+  cout << randomized_select(dn.get(), num, 5) << endl;
+  cout << randomized_select(n, 5) << endl;
+}
