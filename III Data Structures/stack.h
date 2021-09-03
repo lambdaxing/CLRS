@@ -40,8 +40,10 @@ stack<T>::stack(stack&& rhs)
 
 template <typename T>
 stack<T>& stack<T>::operator=(const stack& rhs) {
-  arrayList<T>::operator=(rhs);
-  top = rhs.top;
+  if (this != &rhs) {
+    arrayList<T>::operator=(rhs);
+    top = rhs.top;
+  }
   return *this;
 }
 

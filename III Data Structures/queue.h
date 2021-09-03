@@ -20,7 +20,7 @@ class queue : private arrayList<T> {
   void enqueue(Ts&&... params);
   T dequeue();
 
- private:
+ protected:
   using arrayList<T>::length;
   using arrayList<T>::p;
   size_t head;
@@ -69,9 +69,11 @@ queue<T>::queue(queue&& rhs)
 
 template <typename T>
 queue<T>& queue<T>::operator=(const queue& rhs) {
-  arrayList<T>::operator=(rhs);
-  head = rhs.head;
-  size = rhs.size;
+  if (this != &rhs) {
+    arrayList<T>::operator=(rhs);
+    head = rhs.head;
+    size = rhs.size;
+  }
   return *this;
 }
 

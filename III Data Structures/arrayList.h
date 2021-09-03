@@ -1,10 +1,11 @@
 #pragma once
+#include <iostream>
 
 template <typename T>
 class arrayList {
  public:
   typedef std::size_t size_t;
-  arrayList();
+  arrayList(size_t n = 10);
   arrayList(const arrayList& rhs);
   arrayList(arrayList&& rhs);
   ~arrayList();
@@ -18,7 +19,7 @@ class arrayList {
 };
 
 template <typename T>
-arrayList<T>::arrayList() : length(10), p(new T[length]) {}
+arrayList<T>::arrayList(size_t n) : length(n), p(new T[length]) {}
 
 template <typename T>
 arrayList<T>::arrayList(const arrayList& rhs)
