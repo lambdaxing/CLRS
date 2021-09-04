@@ -4,7 +4,7 @@
 #include "myExceptions.h"
 
 template <typename T>
-class queue : private arrayList<T> {
+class queue : protected arrayList<T> {
  public:
   using typename arrayList<T>::size_t;
   queue();
@@ -15,7 +15,7 @@ class queue : private arrayList<T> {
   ~queue() {}
 
   bool empty() const;
-  void enqueue(const T& x);
+  //   void enqueue(const T& x);
   template <typename... Ts>
   void enqueue(Ts&&... params);
   T dequeue();
@@ -29,12 +29,12 @@ class queue : private arrayList<T> {
   size_t tail() const { return (head + size) % length; }
 };
 
-template <typename T>
-void queue<T>::enqueue(const T& x) {
-  enlarge();
-  p[tail()] = x;
-  size++;
-}
+// template <typename T>
+// void queue<T>::enqueue(const T& x) {
+//   enlarge();
+//   p[tail()] = x;
+//   size++;
+// }
 
 template <typename T>
 template <typename... Ts>

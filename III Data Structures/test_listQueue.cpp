@@ -1,23 +1,23 @@
 #include <iostream>
 
 #include "Widget.h"
-#include "queue.h"
+#include "listQueue.h"
 
 int main() {
-  queue<Widget> aW;
-  queue<int> aI;
+  listQueue<Widget> aW;
+  listQueue<int> aI;
   Widget a;
   for (int i = 1; i < 11; i++) aW.enqueue(Widget());
   for (int i = 1; i < 11; i++) aW.enqueue(a);
   for (int i = 1; i < 11; i++) aI.enqueue();
   for (int i = 1; i < 11; i++) aI.enqueue(1);
-  queue<Widget> bW = aW;
-  queue<Widget> cW = std::move(aW);
+  listQueue<Widget> bW = aW;
+  listQueue<Widget> cW = std::move(aW);
   bW = cW;
   cW = std::move(bW);
 
-  queue<int> bI = aI;
-  queue<int> cI = std::move(aI);
+  listQueue<int> bI = aI;
+  listQueue<int> cI = std::move(aI);
   bI = cI;
   cI = std::move(bI);
 

@@ -23,8 +23,8 @@ class deque : private queue<T> {
   T pop_front();
 
   void push_front(T&& x);  // 这儿区分左值和右值使得实现代码有些重复。
-  void push_front(const T& x);  // 万能引用或许能解决，
-  void push_back(const T& x);  //但这儿的 T 并非一个被推导的型别。
+  void push_front(const T& x);  // 类似 queue 实现的万能引用或许能解决，
+  void push_back(const T& x);  // 但后面增加了 emplace 方法用于构造值，
   void push_back(T&& x);       //"copy-swap" 技术值得斟酌。
 
   template <typename... Ts>

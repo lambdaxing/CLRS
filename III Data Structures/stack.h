@@ -15,7 +15,7 @@ class stack : private arrayList<T> {
   ~stack() {}
 
   bool empty() const;
-  void push(const T& x);
+  //   void push(const T& x);
   //   void push(T&& x);
   template <typename... Ts>
   void push(Ts&&... params);
@@ -73,11 +73,11 @@ bool stack<T>::empty() const {
     return false;
 }
 
-template <typename T>
-void stack<T>::push(const T& x) {
-  enlarge();
-  p[++top] = x;
-}
+// template <typename T>
+// void stack<T>::push(const T& x) {
+//   enlarge();
+//   p[++top] = x;
+// }
 
 // template <typename T>
 // void stack<T>::push(T&& x) {
