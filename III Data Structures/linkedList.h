@@ -31,16 +31,16 @@ class linkedList {
   void list_delete(pNode x);
 
  protected:
-  void check(pNode x);
+  void check(pNode x) const;
   void clear();
   void swap(linkedList& rhs);
   template <typename... Ts>
-  pNode createNode(pNode p = nullptr, pNode n = nullptr, Ts&&... params);
+  pNode createNode(pNode p, pNode n, Ts&&... params);
 
   pNode head = nullptr;
 };
 template <typename T>
-void linkedList<T>::check(pNode x) {
+void linkedList<T>::check(pNode x) const {
   if (x == nullptr) throw illegalIndex("Use nullptr, pNode is nullptr!");
 }
 template <typename T>
@@ -71,6 +71,7 @@ template <typename... Ts>
 void linkedList<T>::list_insert(pNode p, Ts&&... params) {
   if (p == nullptr) {  // insert pre of head
     auto c = createNode(nullptr, head, std::forward<Ts>(params)...);
+    head->prev = c;
     head = c;
   } else {  // insert next of p
     auto c = createNode(p, p->next, std::forward<Ts>(params)...);
@@ -104,6 +105,7 @@ linkedList<T>::linkedList(const linkedList& rhs) {
   auto rhsNode = rhs.head;
   head = createNode(nullptr, nullptr, rhsNode->key);
   auto preNode = head;
+  rhsNode = rhsNode->next;
   while (rhsNode != nullptr) {
     auto currentNode = createNode(preNode, nullptr, rhsNode->key);
     preNode->next = currentNode;
