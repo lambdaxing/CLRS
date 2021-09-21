@@ -2,24 +2,22 @@
 #include <functional>
 #include <iostream>
 
-#include "myExceptions.h"
-
-template <typename T>
-class binarySearchTree;
-template <typename T>
-void print(typename binarySearchTree<T>::pNode x);
-template <typename T>
-void preorder_tree_walk(
-    typename binarySearchTree<T>::pNode x,
-    std::function<void(typename binarySearchTree<T>::pNode)> f = print);
-template <typename T>
-void inorder_tree_walk(
-    typename binarySearchTree<T>::pNode x,
-    std::function<void(typename binarySearchTree<T>::pNode)> f = print);
-template <typename T>
-void postorder_tree_walk(
-    typename binarySearchTree<T>::pNode x,
-    std::function<void(typename binarySearchTree<T>::pNode)> f = print);
+// template <typename T>
+// class binarySearchTree;
+// template <typename T>
+// void print(typename binarySearchTree<T>::pNode x);
+// template <typename T>
+// void preorder_tree_walk(
+//     typename binarySearchTree<T>::pNode x,
+//     std::function<void(typename binarySearchTree<T>::pNode)> f = print);
+// template <typename T>
+// void inorder_tree_walk(
+//     typename binarySearchTree<T>::pNode x,
+//     std::function<void(typename binarySearchTree<T>::pNode)> f = print);
+// template <typename T>
+// void postorder_tree_walk(
+//     typename binarySearchTree<T>::pNode x,
+//     std::function<void(typename binarySearchTree<T>::pNode)> f = print);
 
 template <typename T>
 class binarySearchTree {
@@ -115,19 +113,6 @@ binarySearchTree<T>& binarySearchTree<T>::operator=(binarySearchTree&& rhs) {
   return *this;
 }
 
-void postorder_tree_walk(
-    typename binarySearchTree<std::string>::pNode,
-    std::function<void(typename binarySearchTree<std::string>::pNode)>);
-void postorder_tree_walk(
-    typename binarySearchTree<int>::pNode,
-    std::function<void(typename binarySearchTree<int>::pNode)>);
-
-template <typename T>
-binarySearchTree<T>::~binarySearchTree() {
-  std::function<void(pNode)> f = [](pNode x) { delete x; };
-  postorder_tree_walk(root, f);
-}
-
 template <typename T>
 void inorder_tree_walk(
     typename binarySearchTree<T>::pNode x,
@@ -158,6 +143,20 @@ void postorder_tree_walk(
     f(x);
   }
 }
+
+void postorder_tree_walk(
+    typename binarySearchTree<std::string>::pNode,
+    std::function<void(typename binarySearchTree<std::string>::pNode)>);
+void postorder_tree_walk(
+    typename binarySearchTree<int>::pNode,
+    std::function<void(typename binarySearchTree<int>::pNode)>);
+
+template <typename T>
+binarySearchTree<T>::~binarySearchTree() {
+  std::function<void(pNode)> f = [](pNode x) { delete x; };
+  postorder_tree_walk(root, f);
+}
+
 template <typename T>
 typename binarySearchTree<T>::pNode binarySearchTree<T>::tree_search_recursive(
     pNode x, const T& k) {
