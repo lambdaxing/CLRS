@@ -45,8 +45,7 @@ class binarySearchTree {
 
  private:
   void swap(binarySearchTree& rhs);
-  void copy(pNode v, pNode c,
-            pNode cp);  // 复制 v 子树 到 c 上，cp 是 c 的父节点
+  pNode copy(pNode v, pNode cp);  // 复制 v 子树，cp 是复制的子树父节点
   pNode createNode(const T& k, pNode f = nullptr, pNode l = nullptr,
                    pNode r = nullptr) {
     return new node(k, f, l, r);
@@ -68,49 +67,24 @@ class binarySearchTree {
   pNode root = nullptr;
 };
 
-template <typename T>
-void binarySearchTree<T>::insert(const T& k) {
-  tree_insert(createNode(k));
-}
-template <typename T>
-void binarySearchTree<T>::del(const T& k) {
-  auto x = tree_search(k);
-  if (x != nullptr) tree_delete(x);
-}
-template <typename T>
-void binarySearchTree<T>::swap(binarySearchTree& rhs) {
-  using std::swap;
-  swap(root, rhs.root);
-}
-template <typename T>
-void binarySearchTree<T>::copy(pNode v, pNode c, pNode cp) {
-  if (v != nullptr) {
-    c = createNode(v->key, cp);   // 复制当前结点
-    copy(v->left, c->left, c);    // 复制 left-child
-    copy(v->right, c->right, c);  // 复制 right-child
+// 模板的特例化，以便编译器寻找，需要给出特例版本的定义，仅有声明是错误的以为实现会自己具现。
+void postorder_tree_walk(
+    typename binarySearchTree<std::string>::pNode x,
+    std::function<void(typename binarySearchTree<std::string>::pNode)> f) {
+  if (x != nullptr) {
+    postorder_tree_walk(x->left, f);
+    postorder_tree_walk(x->right, f);
+    f(x);
   }
 }
-template <typename T>
-binarySearchTree<T>::binarySearchTree(const binarySearchTree& rhs) {
-  copy(rhs.root, root, nullptr);
-}
-template <typename T>
-binarySearchTree<T>::binarySearchTree(binarySearchTree&& rhs) : root(rhs.root) {
-  rhs.root = nullptr;
-}
-template <typename T>
-binarySearchTree<T>& binarySearchTree<T>::operator=(
-    const binarySearchTree& rhs) {
-  if (this != &rhs) {
-    auto t = rhs;
-    swap(t);
+void postorder_tree_walk(
+    typename binarySearchTree<int>::pNode x,
+    std::function<void(typename binarySearchTree<int>::pNode)> f) {
+  if (x != nullptr) {
+    postorder_tree_walk(x->left, f);
+    postorder_tree_walk(x->right, f);
+    f(x);
   }
-  return *this;
-}
-template <typename T>
-binarySearchTree<T>& binarySearchTree<T>::operator=(binarySearchTree&& rhs) {
-  swap(rhs);
-  return *this;
 }
 
 template <typename T>
@@ -144,17 +118,58 @@ void postorder_tree_walk(
   }
 }
 
-void postorder_tree_walk(
-    typename binarySearchTree<std::string>::pNode,
-    std::function<void(typename binarySearchTree<std::string>::pNode)>);
-void postorder_tree_walk(
-    typename binarySearchTree<int>::pNode,
-    std::function<void(typename binarySearchTree<int>::pNode)>);
-
 template <typename T>
 binarySearchTree<T>::~binarySearchTree() {
   std::function<void(pNode)> f = [](pNode x) { delete x; };
   postorder_tree_walk(root, f);
+}
+
+template <typename T>
+void binarySearchTree<T>::insert(const T& k) {
+  tree_insert(createNode(k));
+}
+template <typename T>
+void binarySearchTree<T>::del(const T& k) {
+  auto x = tree_search(k);
+  if (x != nullptr) tree_delete(x);
+}
+template <typename T>
+void binarySearchTree<T>::swap(binarySearchTree& rhs) {
+  using std::swap;
+  swap(root, rhs.root);
+}
+template <typename T>
+typename binarySearchTree<T>::pNode binarySearchTree<T>::copy(pNode v,
+                                                              pNode cp) {
+  if (v != nullptr) {
+    auto c = createNode(v->key, cp);
+    c->left = copy(v->left, c->left, c);
+    c->right = copy(v->right, c->right, c);
+    return c;
+  }
+  return nullptr;
+}
+template <typename T>
+binarySearchTree<T>::binarySearchTree(const binarySearchTree& rhs) {
+  root = copy(rhs.root, nullptr);
+}
+template <typename T>
+binarySearchTree<T>::binarySearchTree(binarySearchTree&& rhs) : root(rhs.root) {
+  rhs.root = nullptr;
+}
+template <typename T>
+binarySearchTree<T>& binarySearchTree<T>::operator=(
+    const binarySearchTree& rhs) {
+  if (this != &rhs) {
+    auto t = rhs;
+    swap(t);
+  }
+  return *this;
+}
+template <typename T>
+binarySearchTree<T>& binarySearchTree<T>::operator=(binarySearchTree&& rhs) {
+  swap(rhs);
+  return *this;
 }
 
 template <typename T>
