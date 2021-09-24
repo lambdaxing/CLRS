@@ -2,7 +2,7 @@
 #include "myExceptions.h"
 
 template <typename T>
-class rbTree {
+class orderStatisticTree {
  public:
   struct node;
   using pNode = node*;
@@ -10,25 +10,28 @@ class rbTree {
   struct node {
     node() = default;
     node(colorType c) : color(c) {}
-    node(const T& k, pNode f, pNode l, pNode r, colorType c)
-        : key(k), p(f), left(l), right(f), color(c) {}
+    node(const T& k, pNode f, pNode l, pNode r, colorType c, std::size_t s)
+        : key(k), p(f), left(l), right(f), color(c), size(s) {}
     T key;
     pNode p;
     pNode left;
     pNode right;
     colorType color;
+    std::size_t size = 0;
   };
 
-  rbTree();
-  rbTree(const rbTree& rhs);
-  rbTree(rbTree&& rhs);
-  rbTree& operator=(const rbTree& rhs);
-  rbTree& operator=(rbTree&& rhs);
-  ~rbTree();
-  void swap(rbTree& rhs);
+  orderStatisticTree();
+  orderStatisticTree(const orderStatisticTree& rhs);
+  orderStatisticTree(orderStatisticTree&& rhs);
+  orderStatisticTree& operator=(const orderStatisticTree& rhs);
+  orderStatisticTree& operator=(orderStatisticTree&& rhs);
+  ~orderStatisticTree();
+  void swap(orderStatisticTree& rhs);
 
   void insert(const T& k);
   void del(const T& k);
+  pNode select(std::size_t i);
+  std::size_t rank(const T& k);
 
  protected:
   void rb_insert(pNode z);
@@ -54,26 +57,75 @@ class rbTree {
   pNode copy(pNode v, pNode cp, pNode vnil);
   void clear(pNode x);
 
+  // 返回指向以 x 为根的子树中包含第 i 小关键字的结点
+  pNode os_select(pNode x, std::size_t i);
+  // 返回对树中序遍历对应的线性序中 x 的位置
+  std::size_t os_rank(pNode x);
+  void rb_delete_size_fixup(pNode x);
+
   pNode root;
   pNode nil;
 };
 template <typename T>
-rbTree<T>::rbTree() {
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::select(
+    std::size_t i) {
+  return os_select(root, i);
+}
+template <typename T>
+std::size_t orderStatisticTree<T>::rank(const T& k) {
+  auto x = tree_search(k);
+  if (x == nil) {
+    throw illegalInputData("Rank element that do not exist!");
+  }
+  return os_rank(x);
+}
+template <typename T>
+void orderStatisticTree<T>::rb_delete_size_fixup(pNode x) {
+  while (x != root) {
+    x->p->size--;
+    x = x->p;
+  }
+}
+template <typename T>
+std::size_t orderStatisticTree<T>::os_rank(pNode x) {
+  auto r = x->left->size + 1;
+  auto y = x;
+  while (y != root) {
+    if (y == y->p->right) r += y->p->left->size + 1;
+    y = y->p;
+  }
+  return r;
+}
+template <typename T>
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::os_select(
+    pNode x, std::size_t i) {
+  auto r = x->left->size + 1;
+  if (i == r)
+    return x;
+  else if (i < r)
+    return os_select(x->left, i);
+  else
+    return os_select(x->right, i - r);
+}
+template <typename T>
+orderStatisticTree<T>::orderStatisticTree() {
   nil = createNode(colorType::BLACK);
   root = nil;
 }
 template <typename T>
-rbTree<T>::rbTree(const rbTree& rhs) {
+orderStatisticTree<T>::orderStatisticTree(const orderStatisticTree& rhs) {
   nil = createNode(*(rhs.nil));
   root = copy(rhs.root, nil, rhs.nil);
 }
 template <typename T>
-rbTree<T>::rbTree(rbTree&& rhs) : nil(rhs.nil), root(rhs.root) {
+orderStatisticTree<T>::orderStatisticTree(orderStatisticTree&& rhs)
+    : nil(rhs.nil), root(rhs.root) {
   rhs.nil = createNode(colorType::BLACK);
-  rhs.root = rhs.nil;  // 恢复 rhs 为默认 rbTree ，只为了可析构
+  rhs.root = rhs.nil;  // 恢复 rhs 为默认 orderStatisticTree ，只为了可析构
 }
 template <typename T>
-rbTree<T>& rbTree<T>::operator=(const rbTree& rhs) {
+orderStatisticTree<T>& orderStatisticTree<T>::operator=(
+    const orderStatisticTree& rhs) {
   if (this != &rhs) {
     auto t = rhs;
     swap(t);
@@ -81,17 +133,18 @@ rbTree<T>& rbTree<T>::operator=(const rbTree& rhs) {
   return *this;
 }
 template <typename T>
-rbTree<T>& rbTree<T>::operator=(rbTree&& rhs) {
+orderStatisticTree<T>& orderStatisticTree<T>::operator=(
+    orderStatisticTree&& rhs) {
   swap(rhs);
   return *this;
 }
 template <typename T>
-rbTree<T>::~rbTree() {
+orderStatisticTree<T>::~orderStatisticTree() {
   clear(root);
   delete nil;
 }
 template <typename T>
-void rbTree<T>::clear(pNode x) {
+void orderStatisticTree<T>::clear(pNode x) {
   if (x != nil) {
     clear(x->left);
     clear(x->right);
@@ -99,16 +152,18 @@ void rbTree<T>::clear(pNode x) {
   }
 }
 template <typename T>
-void rbTree<T>::swap(rbTree& rhs) {
+void orderStatisticTree<T>::swap(orderStatisticTree& rhs) {
   using std::swap;
   swap(nil, rhs.nil);  // 交换两个的值
   swap(root,
        rhs.root);  // 交换后，两个指针分别指向对方的元素，当 nil = root 时无冲突
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::copy(pNode v, pNode cp, pNode vnil) {
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::copy(pNode v,
+                                                                  pNode cp,
+                                                                  pNode vnil) {
   if (v != vnil) {
-    auto c = createNode(v->key, cp, nil, nil, v->color);
+    auto c = createNode(v->key, cp, nil, nil, v->color, v->size);
     c->left = copy(v->left, c, vnil);
     c->right = copy(v->right, c, vnil);
     return c;
@@ -116,7 +171,8 @@ typename rbTree<T>::pNode rbTree<T>::copy(pNode v, pNode cp, pNode vnil) {
   return nil;
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::tree_predecessor(pNode x) {
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::tree_predecessor(
+    pNode x) {
   if (x->left != nil) return tree_maximum(x->left);
   auto y = x->p;
   while (y != nil && x == y->left) {
@@ -126,7 +182,8 @@ typename rbTree<T>::pNode rbTree<T>::tree_predecessor(pNode x) {
   return y;
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::tree_successor(pNode x) {
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::tree_successor(
+    pNode x) {
   if (x->right != nil) return tree_minimum(x->right);
   auto y = x->p;
   while (y != nil && x == y->right) {
@@ -136,8 +193,8 @@ typename rbTree<T>::pNode rbTree<T>::tree_successor(pNode x) {
   return y;
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::tree_search_recursive(pNode x,
-                                                           const T& k) {
+typename orderStatisticTree<T>::pNode
+orderStatisticTree<T>::tree_search_recursive(pNode x, const T& k) {
   if (x == nil || x->key == k) return x;
   if (k < x->key)
     return tree_search_recursive(x->left, k);
@@ -145,8 +202,8 @@ typename rbTree<T>::pNode rbTree<T>::tree_search_recursive(pNode x,
     return tree_search_recursive(x->right, k);
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::tree_search_iterative(pNode x,
-                                                           const T& k) {
+typename orderStatisticTree<T>::pNode
+orderStatisticTree<T>::tree_search_iterative(pNode x, const T& k) {
   while (x != nil && x->key != k) {
     if (k < x->key)
       x = x->left;
@@ -156,21 +213,24 @@ typename rbTree<T>::pNode rbTree<T>::tree_search_iterative(pNode x,
   return x;
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::tree_search(const T& k) {
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::tree_search(
+    const T& k) {
   return tree_search_recursive(root, k);
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::tree_minimum(pNode x) {
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::tree_minimum(
+    pNode x) {
   while (x->left != nil) x = x->left;
   return x;
 }
 template <typename T>
-typename rbTree<T>::pNode rbTree<T>::tree_maximum(pNode x) {
+typename orderStatisticTree<T>::pNode orderStatisticTree<T>::tree_maximum(
+    pNode x) {
   while (x->right != nil) x = x->right;
   return x;
 }
 template <typename T>
-void rbTree<T>::rb_delete_fixup(pNode x) {
+void orderStatisticTree<T>::rb_delete_fixup(pNode x) {
   while (x != root && x->color == colorType::BLACK) {
     if (x == x->p->left) {  // x 是 x->p->left 时
       auto w = x->p->right;
@@ -225,7 +285,7 @@ void rbTree<T>::rb_delete_fixup(pNode x) {
   x->color = colorType::BLACK;
 }
 template <typename T>
-void rbTree<T>::rb_delete(pNode z) {
+void orderStatisticTree<T>::rb_delete(pNode z) {
   auto y = z;
   auto y_original_color = y->color;
   pNode x;
@@ -250,12 +310,14 @@ void rbTree<T>::rb_delete(pNode z) {
     y->left = z->left;
     y->left->p = y;
     y->color = z->color;
+    y->size = z->size;  // update size
   }
+  rb_delete_size_fixup(x);  // update size
   if (y_original_color == colorType::BLACK) rb_delete_fixup(x);
 }
 
 template <typename T>
-void rbTree<T>::rb_transplant(pNode u, pNode v) {
+void orderStatisticTree<T>::rb_transplant(pNode u, pNode v) {
   if (u->p == nil)
     root = v;
   else if (u == u->p->left)
@@ -265,11 +327,12 @@ void rbTree<T>::rb_transplant(pNode u, pNode v) {
   v->p = u->p;
 }
 template <typename T>
-void rbTree<T>::rb_insert(pNode z) {
+void orderStatisticTree<T>::rb_insert(pNode z) {
   auto y = nil;
   auto x = root;
   while (x != nil) {  // find position of inserting
     y = x;
+    y->size++;  // update size
     if (z->key < x->key)
       x = x->left;
     else
@@ -277,7 +340,7 @@ void rbTree<T>::rb_insert(pNode z) {
   }
   z->p = y;
   if (y == nil)
-    root = z;  // insert empty rbTree
+    root = z;  // insert empty orderStatisticTree
   else if (z->key < y->key)
     y->left = z;
   else
@@ -287,7 +350,7 @@ void rbTree<T>::rb_insert(pNode z) {
   rb_insert_fixup(z);
 }
 template <typename T>
-void rbTree<T>::rb_insert_fixup(pNode z) {
+void orderStatisticTree<T>::rb_insert_fixup(pNode z) {
   // while 循环处理性质四（red 结点的子结点为 black）背违反的情形，
   // 仅性质二被违反，while 循环不执行。
   while (z->p->color == colorType::RED) {
@@ -337,14 +400,14 @@ void rbTree<T>::rb_insert_fixup(pNode z) {
       left_rotate(z->p->p);             // case 3
     }
   }
-  // 若 rbTree 的性质二（根结点是黑色）被违反，此处纠正。
+  // 若 orderStatisticTree 的性质二（根结点是黑色）被违反，此处纠正。
   // 注：while 循环结束时，z->p->color 是黑色，若 z 是根结点，
   // 则 z->p = nil 的 color 也是黑色。
   root->color = colorType::BLACK;
 }
 
 template <typename T>
-void rbTree<T>::left_rotate(pNode x) {
+void orderStatisticTree<T>::left_rotate(pNode x) {
   auto y = x->right;   // set y
   x->right = y->left;  // turn y's left subtree into x's right subtree
   if (y->left != nil) y->left->p = x;
@@ -357,10 +420,14 @@ void rbTree<T>::left_rotate(pNode x) {
     x->p->right = y;
   y->left = x;  // put x on y's left
   x->p = y;
+
+  // update size
+  y->size = x->size;
+  x->size = x->left->size + x->right->size + 1;
 }
 
 template <typename T>
-void rbTree<T>::right_rotate(pNode y) {
+void orderStatisticTree<T>::right_rotate(pNode y) {
   auto x = y->left;    // set x
   y->left = x->right;  // turn x's right subtree into y's left subtree
   if (x->right != nil) x->right->p = y;
@@ -373,15 +440,19 @@ void rbTree<T>::right_rotate(pNode y) {
     y->p->right = x;
   x->right = y;  // put y on x's left
   y->p = x;
+
+  // update size
+  x->size = y->size;
+  y->size = y->left->size + y->right->size + 1;
 }
 
 template <typename T>
-void rbTree<T>::insert(const T& k) {
-  rb_insert(createNode(k, nil, nil, nil, colorType::RED));
+void orderStatisticTree<T>::insert(const T& k) {
+  rb_insert(createNode(k, nil, nil, nil, colorType::RED, 1));
 }
 
 template <typename T>
-void rbTree<T>::del(const T& k) {
+void orderStatisticTree<T>::del(const T& k) {
   auto z = tree_search(k);
   if (z == nil) {
     throw illegalInputData("Delete elements that do not exist!");
